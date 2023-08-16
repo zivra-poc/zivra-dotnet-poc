@@ -1,0 +1,62 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Dotnet Pipeline 
+
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+
+  publish-package:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Zipping the Package
+      run: dotnet pack --configuration Release
+    - name: Add Source
+      run: dotnet nuget add source --username ${{ secrets.USER_NAME }} --password ${{ secrets.API_KEY }} --store-password-in-clear-text --name ${{vars.NUGET_LINK}} ${{vars.NUGET_SOURCE}}
+    - name: Publish the Package
+      run: dotnet nuget push ${{vars.NUGET_PATH}}  --api-key ${{ secrets.API_KEY }}  --source ${{vars.NUGET_LINK}}
+
+  publish-artifact:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Archiveing a Built Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-artifact
+        path: ${{vars.NUGET_ARTTIFACT_PATH}}
+        if-no-files-found: error
