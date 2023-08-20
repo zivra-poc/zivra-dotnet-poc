@@ -5,7 +5,7 @@ name: Dotnet Pipeline
 
 on:
   push:
-    branches: [ "release" ]
+    branches: [ "release-cd" ]
 
 jobs:
   build:
@@ -60,3 +60,25 @@ jobs:
         name: dotnet-artifact
         path: ${{vars.NUGET_ARTTIFACT_PATH}}
         if-no-files-found: error
+  deploy-artifact:
+    needs: publish-artifact
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release-cd'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Build and Publish
+      run: |
+        dotnet build --configuration Release
+        dotnet publish -c Release -o ./publish
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: api-server01
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+    
+
