@@ -43,7 +43,7 @@ jobs:
   publish-artifact:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release'
+    if: github.ref == 'refs/heads/release-cd'
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
