@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CUSTOMER_ZEVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\WebApplication1\\WebApplication1.csproj": {}
+    "D:\\CUSTOMER_ZIVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\zivra-dotnet-poc\\WebApplication1.csproj": {}
   },
   "projects": {
-    "D:\\CUSTOMER_ZEVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\WebApplication1\\WebApplication1.csproj": {
+    "D:\\CUSTOMER_ZIVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\zivra-dotnet-poc\\WebApplication1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CUSTOMER_ZEVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\WebApplication1\\WebApplication1.csproj",
+        "projectUniqueName": "D:\\CUSTOMER_ZIVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\zivra-dotnet-poc\\WebApplication1.csproj",
         "projectName": "WebApplication1",
-        "projectPath": "D:\\CUSTOMER_ZEVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\WebApplication1\\WebApplication1.csproj",
+        "projectPath": "D:\\CUSTOMER_ZIVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\zivra-dotnet-poc\\WebApplication1.csproj",
         "packagesPath": "C:\\Users\\rkanchan\\.nuget\\packages\\",
-        "outputPath": "D:\\CUSTOMER_ZEVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\WebApplication1\\obj\\",
+        "outputPath": "D:\\CUSTOMER_ZIVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\zivra-dotnet-poc\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\rkanchan\\AppData\\Roaming\\NuGet\\NuGet.Config",
