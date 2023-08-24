@@ -1,4 +1,4 @@
-name: Build and deploy .NET Core application to Web App api-sever
+name: Build and deploy .NET Core application to Web App Api-sever
 on:
   push:
     branches:
