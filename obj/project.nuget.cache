@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "uLD1IFTSw8KVbJ/i8z2iSVrww/kEGUifrKWnC763bmKBPX6GtA+HH/I26pJaChvJu2jrKxqE/Ck+enbdAMD0mA==",
+  "dgSpecHash": "J94xQnK25DxqGpiklL/+FRly1ElcPLVocg6QicV1kt8y86Anh0G1wFti3SZ437zltA/3yd6dIC6pqT+BMyZ+IA==",
   "success": true,
-  "projectFilePath": "D:\\CUSTOMER_ZEVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\WebApplication1\\WebApplication1.csproj",
+  "projectFilePath": "D:\\CUSTOMER_ZIVRA\\Zivra_ASPNET_ReactJS_POC\\ASPNET_REACTJS_PROJ2\\api\\zivra-dotnet-poc\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rkanchan\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\6.0.0\\microsoft.aspnetcore.jsonpatch.6.0.0.nupkg.sha512",
     "C:\\Users\\rkanchan\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\6.0.0\\microsoft.aspnetcore.mvc.newtonsoftjson.6.0.0.nupkg.sha512",
