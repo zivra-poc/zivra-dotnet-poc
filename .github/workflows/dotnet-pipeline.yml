@@ -115,20 +115,22 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-artifact
-        path: ${{vars.NUGET_ARTTIFACT_PATH}}
+        path: ${{vars.NUGET_ARTTIFACT_PATH}} # Path of artifact location
         if-no-files-found: error
   deploy:
     runs-on: ubuntu-latest
     needs: publish-artifact
+    environment:
+        name: Production # This specific stage is intricately linked with the Production Environment. It is imperative to ensure the availability of the environment within the workflow. 
     steps:
     - name: Download artifact from build job
       uses: actions/download-artifact@v3
       with:
         name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path of package
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.api_server01_8AC7 }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        publish-profile: ${{ secrets.api_server01_8AC7 }}# PaaS Profile Secrets
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path of package
