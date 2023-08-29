@@ -1,0 +1,134 @@
+# ---------------------------------------------------------------------------------------
+# Primesoft IP Solution Pvt Ltd
+# ---------------------------------------------------------------------------------------
+# BE Pipeline
+
+name: Dotnet Pipeline 
+
+on:
+  push:
+    branches: '*' # The current branch is designated for all activities in the event that specific modifications are deemed necessary.
+env:
+  AZURE_WEBAPP_NAME: api-server01
+  AZURE_WEBAPP_PACKAGE_PATH: ./publish
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 6.0.x
+  WORKING_DIRECTORY: .
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Restore
+      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+    - name: Build
+      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Test
+      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+    - name: Publish
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+  analyze:
+    name: Analyze
+    needs: build
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'dotnet' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
+
+    - name: Official SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v2.0.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # The generated token is employed within the designated "SONAR_TOKEN" section.
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # The provided host URL, denoted as the SONAR_HOST_URL, serves as a crucial component within the context of this system. It should adhere to the following format: https://192.168.1.1:9000/ for proper configuration and functionality.
+    - name: SonarQube Quality Gate Check
+      uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+      timeout-minutes: 5
+      env:
+       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # The generated token is employed within the designated "SONAR_TOKEN" section. 
+       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}  # The provided host URL, denoted as the SONAR_HOST_URL, serves as a crucial component within the context of this system. It should adhere to the following format: https://192.168.1.1:9000/ for proper configuration and functionality.
+    - name: "Example show SonarQube Quality Gate Status value"
+      run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+
+  publish-package:
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Zipping the Package
+      run: dotnet pack --configuration Release
+    - name: Add Source
+      run: dotnet nuget add source --username ${{ secrets.USER_NAME }} --password ${{ secrets.API_KEY }} --store-password-in-clear-text --name ${{vars.NUGET_LINK}} ${{vars.NUGET_SOURCE}}
+    - name: Publish the Package
+      run: dotnet nuget push ${{vars.NUGET_PATH}}  --api-key ${{ secrets.API_KEY }}  --source ${{vars.NUGET_LINK}}
+
+  publish-artifact:
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet publish --configuration Release
+    - name: Archiveing a Built Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-artifact
+        path: ${{vars.NUGET_ARTTIFACT_PATH}}
+        if-no-files-found: error
+  deploy:
+    runs-on: ubuntu-latest
+    needs: publish-artifact
+    steps:
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    - name: Deploy to Azure WebApp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.api_server01_8AC7 }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
