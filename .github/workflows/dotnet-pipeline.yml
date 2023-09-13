@@ -5,9 +5,15 @@
 
 name: Dotnet Pipeline 
 
-on:
+on: # The current branch is designated for all activities in the event that specific modifications are deemed necessary.
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Give your branch name: "
+        default: 'main'
+        type: "string"
   push:
-    branches: '*' # The current branch is designated for all activities in the event that specific modifications are deemed necessary.
+    branches: '${{ inputs.branch }}'
 env:
   AZURE_WEBAPP_NAME: api-server01
   AZURE_WEBAPP_PACKAGE_PATH: ./publish
